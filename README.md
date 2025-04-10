@@ -18,12 +18,18 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
   - [Full Configuration](#full-configuration-for-private-servers-or-protected-topics)
     - [Option 1: Direct Token](#option-1-direct-token-in-configuration-less-secure)
     - [Option 2: VS Code Inputs](#option-2-using-vs-code-inputs-for-secure-token-handling-recommended)
-- [Docker](#docker-coming-soon)
+- [Docker](#docker)
+  - [Using with MCP in Docker](#using-with-mcp-in-docker)
+    - [Option 1: Let MCP start the Docker container](#option-1-let-mcp-start-the-docker-container-recommended)
+    - [Option 2: Connect to a running container](#option-2-connect-to-a-running-container)
+  - [Using with Docker Compose](#using-with-docker-compose)
+  - [Building and Running with Docker](#building-and-running-with-docker)
 - [Installation](#installation)
   - [Option 1: Install Globally](#option-1-install-globally)
   - [Option 2: Run with npx](#option-2-run-with-npx)
   - [Option 3: Install Locally](#option-3-install-locally)
   - [Option 4: Build and Use Locally](#option-4-build-and-use-locally-with-node-command)
+    - [Using locally built server with MCP](#using-locally-built-server-with-mcp)
 - [Configuration](#configuration)
   - [Environment Variables](#environment-variables)
 - [Usage](#usage)
@@ -118,8 +124,110 @@ Add this to your VS Code settings.json file:
 
 With this setup, VS Code will prompt you for the token when starting the server and the token will be masked when entered.
 
-## Docker (Coming Soon...)
-> **Note**: This option is not yet available but will be added in the future.
+## Docker
+
+### Using with MCP in Docker
+
+There are two approaches to using the ntfy-me-mcp Docker image with MCP:
+
+#### Option 1: Let MCP start the Docker container (Recommended)
+
+In your MCP configuration (e.g., VS Code settings.json):
+
+```json
+"mcp": {
+  "servers": {
+    "ntfy-me-mcp": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-p", "3000:3000",
+        "-e", "NTFY_TOPIC=your-topic-name",
+        "-e", "NTFY_URL=https://your-ntfy-server.com",
+        "-e", "NTFY_TOKEN=${input:ntfy_token}",
+        "gitmotion/ntfy-me-mcp:latest"
+      ],
+      "env": {}
+    }
+  }
+}
+```
+
+#### Option 2: Connect to a running container
+
+First, start the Docker container independently:
+
+```bash
+# Run the container (using published image)
+docker run -d --name ntfy-mcp \
+  -e NTFY_TOPIC=your-topic-name \
+  -p 3000:3000 \
+  gitmotion/ntfy-me-mcp:latest
+```
+
+Then, in your MCP configuration, use the `connectionConfig` approach:
+
+```json
+{
+  "ntfy-me-mcp": {
+    "connectionConfig": {
+      "url": "http://localhost:3000"
+    }
+  }
+}
+```
+
+### Using with Docker Compose
+
+If you prefer using Docker Compose:
+
+1. Create a `docker-compose.yml` file:
+
+```yaml
+version: '3'
+services:
+  ntfy-mcp:
+    image: gitmotion/ntfy-me-mcp:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NTFY_TOPIC=your-topic-name
+      # Optional configurations:
+      # - NTFY_URL=https://your-ntfy-server.com
+      # - NTFY_TOKEN=your-auth-token
+      # - PROTECTED_TOPIC=true
+    restart: unless-stopped
+```
+
+2. Start the container:
+
+```bash
+docker-compose up -d
+```
+
+### Building and Running with Docker
+
+To build the Docker image:
+
+```bash
+# Build the Docker image
+docker build -t ntfy-me-mcp .
+```
+
+To run the container:
+
+```bash
+# Run with minimal configuration (public topic)
+docker run -e NTFY_TOPIC=your-topic-name -p 3000:3000 ntfy-me-mcp
+
+# Run with full configuration (private server/protected topic)
+docker run -e NTFY_TOPIC=your-topic-name \
+           -e NTFY_URL=https://your-ntfy-server.com \
+           -e NTFY_TOKEN=your-auth-token \
+           -e PROTECTED_TOPIC=true \
+           -p 3000:3000 ntfy-me-mcp
+```
 
 ## Installation
 
