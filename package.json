@@ -1,0 +1,38 @@
+{
+  "name": "ntfy-me-mcp",
+  "version": "1.0.0",
+  "description": "An MCP server for sending ntfy notifications to your self-hosted ntfy server 📤",
+  "type": "module",
+  "main": "build/index.js",
+  "bin": {
+    "ntfy-me-mcp": "./build/index.js"
+  },
+  "files": [
+    "build/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.7.0",
+    "dotenv": "^16.4.7",
+    "node-fetch": "^3.3.2",
+    "prompts": "^2.4.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/node-fetch": "^2.6.12",
+    "@types/prompts": "^2.4.9",
+    "typescript": "^5.8.2"
+  },
+  "author": "gitmotion",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gitmotion/ntfy-me-mcp.git"
+  }
+}
