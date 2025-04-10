@@ -30,7 +30,11 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    # Step 5: Publish to npm
+    # Step 5: Build the project
+    - name: Build
+      run: npm run build
+
+    # Step 6: Publish to npm
     - name: Publish package
       run: npm publish
       env:
