@@ -1,6 +1,6 @@
 {
   "name": "ntfy-me-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An MCP server for sending ntfy notifications to your self-hosted ntfy server 📤",
   "type": "module",
   "main": "build/index.js",

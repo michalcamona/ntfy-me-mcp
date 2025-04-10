@@ -1,13 +1,42 @@
 # ntfy-me-mcp
+[![NPM Version](https://img.shields.io/npm/v/ntfy-me-mcp.svg)](https://www.npmjs.com/package/ntfy-me-mcp)
+[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 > A streamlined Model Context Protocol (MCP) server for sending notifications via ntfy service 📲
 
-[![NPM Version](https://img.shields.io/npm/v/ntfy-me-mcp.svg)](https://www.npmjs.com/package/ntfy-me-mcp)
-[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
 ## Overview
 
 ntfy-me-mcp provides AI assistants with the ability to send real-time notifications to your devices through the [ntfy](https://ntfy.sh) service. Get notified when your AI completes tasks, encounters errors, or reaches important milestones - all without constant monitoring.
+
+## Table of Contents
+
+- [Features](#features)
+  - [Coming soon...](#coming-soon)
+- [NPM/NPX - MCP Server Configuration](#npm/npx---mcp-server-configuration-recommended-method---requires-node)
+  - [Minimal Configuration](#minimal-configuration-for-public-topics-on-ntfysh)
+  - [Full Configuration](#full-configuration-for-private-servers-or-protected-topics)
+    - [Option 1: Direct Token](#option-1-direct-token-in-configuration-less-secure)
+    - [Option 2: VS Code Inputs](#option-2-using-vs-code-inputs-for-secure-token-handling-recommended)
+- [Docker](#docker-coming-soon)
+- [Installation](#installation)
+  - [Option 1: Install Globally](#option-1-install-globally)
+  - [Option 2: Run with npx](#option-2-run-with-npx)
+  - [Option 3: Install Locally](#option-3-install-locally)
+  - [Option 4: Build and Use Locally](#option-4-build-and-use-locally-with-node-command)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+- [Usage](#usage)
+  - [Authentication](#authentication)
+  - [Setting Up the Notification Receiver](#setting-up-the-notification-receiver)
+  - [Using with AI Assistants](#using-with-ai-assistants)
+  - [Notification Parameters](#notification-parameters)
+  - [Emoji Shortcodes](#emoji-shortcodes)
+- [Example Notification](#example-notification)
+- [Development](#development)
+  - [Building from Source](#building-from-source)
+- [License](#license)
+- [Contributing](#contributing)
 
 ## Features
 
@@ -17,7 +46,11 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 - 🔒 **Secure**: Optional authentication with access tokens
 - 🌐 **Self-hosted Support**: Works with both ntfy.sh and self-hosted ntfy instances
 
-## MCP Server Configuration (Recommended Method)
+### (Coming soon...)
+- ⁄ **ntfy Actions**: Use ntfy actions to trigger tasks or commands on your device 
+- 📨 **Email**:  Send notifications to email (requires ntfy email server configuration)
+
+## NPM/NPX - MCP Server Configuration (Recommended Method) - requires node
 
 For the easiest setup with MCP-compatible assistants, add this to your MCP configuration:
 
@@ -47,8 +80,7 @@ For the easiest setup with MCP-compatible assistants, add this to your MCP confi
     "env": {
       "NTFY_TOPIC": "your-topic-name",
       "NTFY_URL": "https://your-ntfy-server.com",
-      "NTFY_TOKEN": "your-auth-token",
-      "PROTECTED_TOPIC": "true"
+      "NTFY_TOKEN": "your-auth-token" // Use if using a protected topic/server
     }
   }
 }
@@ -77,7 +109,7 @@ Add this to your VS Code settings.json file:
         "NTFY_TOPIC": "your-topic-name",
         "NTFY_URL": "https://your-ntfy-server.com",
         "NTFY_TOKEN": "${input:ntfy_token}", // Use the input id variable for the token
-        "PROTECTED_TOPIC": "true"
+        "PROTECTED_TOPIC": "true" // Prompts for token and masks it in your config
       }
     }
   }
@@ -85,6 +117,9 @@ Add this to your VS Code settings.json file:
 ```
 
 With this setup, VS Code will prompt you for the token when starting the server and the token will be masked when entered.
+
+## Docker (Coming Soon...)
+> **Note**: This option is not yet available but will be added in the future.
 
 ## Installation
 
@@ -154,7 +189,7 @@ When configuring your MCP to use a locally built version, specify the node comma
 
 ```json
 {
-  "ntfy-me-mcp": {
+  "ntfy-me": {
     "command": "node",
     "args": ["/path/to/ntfy-mcp/build/index.js"],
     "env": {
@@ -196,77 +231,6 @@ NTFY_TOPIC=your-topic-name
 ```
 
 > **Note**: The `PROTECTED_TOPIC` flag helps the application determine whether authentication is required for your topic. When set to "true" and no token is provided, you'll be prompted to enter one. This prevents authentication failures with protected topics.
-
-### MCP Server Configuration
-
-For use with MCP-compatible assistants, add this to your configuration:
-
-#### Minimal configuration (for public topics on ntfy.sh)
-
-```json
-{
-  "ntfy-me-mcp": {
-    "command": "npx",
-    "args": ["ntfy-me-mcp"],
-    "env": {
-      "NTFY_TOPIC": "your-topic-name"
-    },
-    "autoApprove": ["ntfy_me"]
-  }
-}
-```
-
-#### Full configuration (for private servers or protected topics)
-
-##### Option 1: Direct token in configuration (less secure)
-
-```json
-{
-  "ntfy-me-mcp": {
-    "command": "npx",
-    "args": ["ntfy-me-mcp"],
-    "env": {
-      "NTFY_TOPIC": "your-topic-name",
-      "NTFY_URL": "https://your-ntfy-server.com",
-      "NTFY_TOKEN": "your-auth-token",
-      "PROTECTED_TOPIC": "true"
-    },
-    "autoApprove": ["ntfy_me"]
-  }
-}
-```
-
-##### Option 2: Using VS Code inputs for secure token handling (recommended)
-
-Add this to your VS Code settings.json file:
-
-```json
-"mcp": {
-  "inputs": [
-    { // Add this to your inputs array
-      "type": "promptString",
-      "id": "ntfy_token",
-      "description": "Ntfy Token",
-      "password": true
-    }
-  ],
-  "servers": {
-    // Other servers...
-    "ntfy-me-mcp": {
-      "command": "npx",
-      "args": ["ntfy-me-mcp"],
-      "env": {
-        "NTFY_TOPIC": "your-topic-name",
-        "NTFY_URL": "https://your-ntfy-server.com",
-        "NTFY_TOKEN": "${input:ntfy_token}", // Use the input id variable for the token
-        "PROTECTED_TOPIC": "true"
-      }
-    }
-  }
-}
-```
-
-With this setup, VS Code will prompt you for the token when starting the server and the token will be masked when entered.
 
 ## Usage
 
@@ -341,12 +305,6 @@ git clone https://github.com/gitmotion/ntfy-me-mcp.git
 cd ntfy-me-mcp
 npm install
 npm run build
-```
-
-### Running Tests
-
-```bash
-npm test
 ```
 
 ## License
