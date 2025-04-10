@@ -1,6 +1,6 @@
 {
   "name": "ntfy-me-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An MCP server for sending ntfy notifications to your self-hosted ntfy server 📤",
   "type": "module",
   "main": "build/index.js",
@@ -13,7 +13,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x build/index.js",
     "start": "node build/index.js"
   },
   "dependencies": {
