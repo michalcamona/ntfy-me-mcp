@@ -1,45 +1,37 @@
-name: Publish to npm
+name: Publish to npm registry
 
 on:
   push:
     branches:
       - main # Trigger on pushes to the main branch
+    tags:
+      - 'v*'
 
 jobs:
-  publish:
+  build-and-publish:
     name: Publish to npm
     runs-on: ubuntu-latest
-
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # Step 2: Set up Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16 # Specify Node.js version
-        registry-url: https://registry.npmjs.org/
-
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: npm install
-
-    # Step 4: Build the project
-    - name: Build
-      run: npm run build
+      # Step 1: Checkout the repository
+      - uses: actions/checkout@v4
       
-    # Step 5: Log package info
-    - name: Log package info
-      run: |
-        PACKAGE_NAME=$(node -p "require('./package.json').name")
-        PACKAGE_VERSION=$(node -p "require('./package.json').version")
-        echo "Package name: $PACKAGE_NAME"
-        echo "Package version: $PACKAGE_VERSION"
+      # Step 2: Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+      
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-    # Step 6: Publish to npm with force flag
-    - name: Publish package
-      run: npm publish --access public --force
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Step 4: Build the project
+      - name: Build
+        run: npm run build
+      
+      # Step 5: Publish to npm
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
