@@ -22,19 +22,15 @@ jobs:
         node-version: 16 # Specify Node.js version
         registry-url: https://registry.npmjs.org/
 
-    # Step 3: Authenticate with npm
-    - name: Authenticate to npm
-      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-
-    # Step 4: Install dependencies
+    # Step 3: Install dependencies
     - name: Install dependencies
       run: npm install
 
-    # Step 5: Build the project
+    # Step 4: Build the project
     - name: Build
       run: npm run build
       
-    # Step 6: Check package info and verify version
+    # Step 5: Check package info and verify version
     - name: Check package info
       id: check_version
       run: |
@@ -63,7 +59,7 @@ jobs:
           echo "should_publish=false" >> $GITHUB_OUTPUT
         fi
 
-    # Step 7: Publish to npm only if version has changed
+    # Step 6: Publish to npm only if version has changed
     - name: Publish package
       if: steps.check_version.outputs.should_publish == 'true'
       run: npm publish --access public
