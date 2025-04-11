@@ -13,13 +13,14 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 
 - [Features](#features)
   - [Coming soon...](#coming-soon)
-- [NPM/NPX - MCP Server Configuration](#npmnpx---mcp-server-configuration-recommended-method)
-  - [Minimal Configuration](#minimal-configuration-for-public-topics-on-ntfysh)
-  - [Full Configuration](#full-configuration-for-private-servers-or-protected-topics)
-    - [Option 1: Direct Token](#option-1-direct-token-in-configuration-less-secure)
-    - [Option 2: VS Code Inputs](#option-2-using-vs-code-inputs-for-secure-token-handling-recommended)
-- [Docker](#docker)
-  - [Using with MCP in Docker](#using-with-mcp-in-docker)
+- [Quickstart - MCP Server Configuration](#quickstart---mcp-server-configuration)
+  - [NPM / NPX (Recommended Method)](#npm--npx-recommended-method)
+    - [Minimal Configuration](#minimal-configuration-for-public-topics-on-ntfysh)
+    - [Full Configuration](#full-configuration-for-private-servers-or-protected-topics)
+      - [Option 1: Direct Token](#option-1-direct-token-in-configuration-less-secure)
+      - [Option 2: VS Code Inputs](#option-2-using-vs-code-inputs-for-secure-token-handling-recommended)
+  - [Docker](#docker)
+    - [Using with MCP in Docker](#using-with-mcp-in-docker)
 - [Installation](#installation)
   - [Option 1: Install Globally](#option-1-install-globally)
   - [Option 2: Run with npx](#option-2-run-with-npx)
@@ -44,7 +45,7 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 
 - 🚀 **Quick Setup**: Run with npx or docker!
 - 🔔 **Real-time Notifications**: Get updates on your phone/desktop when tasks complete
-- 🎨 **Rich Notifications**: Support for priorities, emoji tags, and detailed messages
+- 🎨 **Rich Notifications**: Support for topic, title, priorities, emoji tags, and detailed messages
 - 🔒 **Secure**: Optional authentication with access tokens
 - 🔑 **Input Masking**: Securely store your ntfy token in your vs config!
 - 🌐 **Self-hosted Support**: Works with both ntfy.sh and self-hosted ntfy instances
@@ -52,14 +53,19 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 ### (Coming soon...)
 - ⁄ **ntfy Actions**: Use ntfy actions to trigger tasks or commands on your device 
 - 📨 **Email**:  Send notifications to email (requires ntfy email server configuration)
+- 🔗 **Click urls**: Ability to customize click urls
+- 📄 **Markdown**: Support for markdown formatting
+- and more!
 
-## NPM/NPX - MCP Server Configuration (Recommended Method)
+## Quickstart - MCP Server Configuration
+
+### NPM / NPX (Recommended Method)
 - Requires npm / npx installed on your system.
 - This method is recommended for most users as it provides a simple & lightweight method to set up the server.
 
 For the easiest setup with MCP-compatible assistants, add this to your MCP configuration:
 
-### Minimal configuration (for public topics on ntfy.sh)
+#### Minimal configuration (for public topics on ntfy.sh)
 
 ```json
 {
@@ -73,7 +79,7 @@ For the easiest setup with MCP-compatible assistants, add this to your MCP confi
 }
 ```
 
-### Full configuration (for private servers or protected topics)
+#### Full configuration (for private servers or protected topics)
 
 #### Option 1: Direct token in configuration
 
