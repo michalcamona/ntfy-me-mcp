@@ -13,17 +13,13 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 
 - [Features](#features)
   - [Coming soon...](#coming-soon)
-- [NPM/NPX - MCP Server Configuration](#npm/npx---mcp-server-configuration-recommended-method---requires-node)
+- [NPM/NPX - MCP Server Configuration](#npmnpx---mcp-server-configuration-recommended-method)
   - [Minimal Configuration](#minimal-configuration-for-public-topics-on-ntfysh)
   - [Full Configuration](#full-configuration-for-private-servers-or-protected-topics)
     - [Option 1: Direct Token](#option-1-direct-token-in-configuration-less-secure)
     - [Option 2: VS Code Inputs](#option-2-using-vs-code-inputs-for-secure-token-handling-recommended)
 - [Docker](#docker)
   - [Using with MCP in Docker](#using-with-mcp-in-docker)
-    - [Option 1: Let MCP start the Docker container](#option-1-let-mcp-start-the-docker-container-recommended)
-    - [Option 2: Connect to a running container](#option-2-connect-to-a-running-container)
-  - [Using with Docker Compose](#using-with-docker-compose)
-  - [Building and Running with Docker](#building-and-running-with-docker)
 - [Installation](#installation)
   - [Option 1: Install Globally](#option-1-install-globally)
   - [Option 2: Run with npx](#option-2-run-with-npx)
@@ -46,17 +42,20 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 
 ## Features
 
-- 🚀 **Quick Setup**: Install globally or run with npx
+- 🚀 **Quick Setup**: Run with npx or docker!
 - 🔔 **Real-time Notifications**: Get updates on your phone/desktop when tasks complete
 - 🎨 **Rich Notifications**: Support for priorities, emoji tags, and detailed messages
 - 🔒 **Secure**: Optional authentication with access tokens
+- 🔑 **Input Masking**: Securely store your ntfy token in your vs config!
 - 🌐 **Self-hosted Support**: Works with both ntfy.sh and self-hosted ntfy instances
 
 ### (Coming soon...)
 - ⁄ **ntfy Actions**: Use ntfy actions to trigger tasks or commands on your device 
 - 📨 **Email**:  Send notifications to email (requires ntfy email server configuration)
 
-## NPM/NPX - MCP Server Configuration (Recommended Method) - requires node
+## NPM/NPX - MCP Server Configuration (Recommended Method)
+- Requires npm / npx installed on your system.
+- This method is recommended for most users as it provides a simple & lightweight method to set up the server.
 
 For the easiest setup with MCP-compatible assistants, add this to your MCP configuration:
 
@@ -76,7 +75,7 @@ For the easiest setup with MCP-compatible assistants, add this to your MCP confi
 
 ### Full configuration (for private servers or protected topics)
 
-#### Option 1: Direct token in configuration (less secure)
+#### Option 1: Direct token in configuration
 
 ```json
 {
@@ -127,106 +126,44 @@ With this setup, VS Code will prompt you for the token when starting the server 
 ## Docker
 
 ### Using with MCP in Docker
+- Requires Docker installed on your system.
+- This method is useful for running the server in a containerized environment.
+- You can use the official Docker images available on Docker Hub or GitHub Container Registry.
 
-There are two approaches to using the ntfy-me-mcp Docker image with MCP:
-
-#### Option 1: Let MCP start the Docker container (Recommended)
+Docker Images:
+- `gitmotion/ntfy-me-mcp:latest` (Docker Hub)
+- `ghcr.io/gitmotion/ntfy-me-mcp:latest` (GitHub Container Registry)
 
 In your MCP configuration (e.g., VS Code settings.json):
 
 ```json
 "mcp": {
   "servers": {
-    "ntfy-me-mcp": {
+    "ntfy-mcp": {
       "command": "docker",
       "args": [
         "run",
+        "-i",
         "--rm",
-        "-p", "3000:3000",
-        "-e", "NTFY_TOPIC=your-topic-name",
-        "-e", "NTFY_URL=https://your-ntfy-server.com",
-        "-e", "NTFY_TOKEN=${input:ntfy_token}",
-        "gitmotion/ntfy-me-mcp:latest"
+        "-e",
+        "NTFY_TOPIC",
+        "-e",
+        "NTFY_URL",
+        "-e",
+        "NTFY_TOKEN",
+        "-e",
+        "PROTECTED_TOPIC",         
+        "gitmotion/ntfy-me-mcp", // OR use ghcr.io/gitmotion/ntfy-me-mcp:latest
       ],
-      "env": {}
+      "env": {
+        "NTFY_TOPIC": "your-topic-name",
+        "NTFY_URL": "https://your-ntfy-server.com",
+        "NTFY_TOKEN": "${input:ntfy_token}",
+        "PROTECTED_TOPIC": "true"
+      }
     }
   }
 }
-```
-
-#### Option 2: Connect to a running container
-
-First, start the Docker container independently:
-
-```bash
-# Run the container (using published image)
-docker run -d --name ntfy-mcp \
-  -e NTFY_TOPIC=your-topic-name \
-  -p 3000:3000 \
-  gitmotion/ntfy-me-mcp:latest
-```
-
-Then, in your MCP configuration, use the `connectionConfig` approach:
-
-```json
-{
-  "ntfy-me-mcp": {
-    "connectionConfig": {
-      "url": "http://localhost:3000"
-    }
-  }
-}
-```
-
-### Using with Docker Compose
-
-If you prefer using Docker Compose:
-
-1. Create a `docker-compose.yml` file:
-
-```yaml
-version: '3'
-services:
-  ntfy-mcp:
-    image: gitmotion/ntfy-me-mcp:latest
-    ports:
-      - "3000:3000"
-    environment:
-      - NTFY_TOPIC=your-topic-name
-      # Optional configurations:
-      # - NTFY_URL=https://your-ntfy-server.com
-      # - NTFY_TOKEN=your-auth-token
-      # - PROTECTED_TOPIC=true
-    restart: unless-stopped
-```
-
-2. Start the container:
-
-```bash
-docker-compose up -d
-```
-
-### Building and Running with Docker
-
-To build the Docker image:
-
-```bash
-# Build the Docker image
-docker build -t ntfy-me-mcp .
-```
-
-To run the container:
-
-```bash
-# Run with minimal configuration (public topic)
-docker run -e NTFY_TOPIC=your-topic-name -p 3000:3000 ntfy-me-mcp
-
-# Run with full configuration (private server/protected topic)
-docker run -e NTFY_TOPIC=your-topic-name \
-           -e NTFY_URL=https://your-ntfy-server.com \
-           -e NTFY_TOKEN=your-auth-token \
-           -e PROTECTED_TOPIC=true \
-           -p 3000:3000 ntfy-me-mcp
 ```
 
 ## Installation
@@ -376,9 +313,6 @@ The tool accepts these parameters:
 | taskSummary | The notification body | Yes |
 | priority | Message priority: min, low, default, high, max | No |
 | tags | Array of notification tags (supports emoji shortcodes) | No |
-| ntfyUrl | Custom ntfy server URL | No |
-| ntfyTopic | Custom topic (overrides env variable) | No |
-| accessToken | Custom auth token (overrides env variable) | No |
 
 ### Emoji Shortcodes
 
