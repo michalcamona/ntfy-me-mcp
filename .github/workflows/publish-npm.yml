@@ -14,13 +14,14 @@ jobs:
     # Step 1: Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Important for proper versioning
 
     # Step 2: Set up Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 16 # Specify Node.js version
-        registry-url: https://registry.npmjs.org/
 
     # Step 3: Install dependencies
     - name: Install dependencies
@@ -30,42 +31,29 @@ jobs:
     - name: Build
       run: npm run build
       
-    # Step 5: Check package info and verify version
+    # Step 5: Check package info and version
     - name: Check package info
-      id: check_version
       run: |
         PACKAGE_NAME=$(node -p "require('./package.json').name")
         PACKAGE_VERSION=$(node -p "require('./package.json').version")
         echo "Package name: $PACKAGE_NAME"
         echo "Package version: $PACKAGE_VERSION"
         
-        echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
-        echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
-        
         # Try to get the latest version from npm
         NPM_VERSION=$(npm view $PACKAGE_NAME version 2>/dev/null || echo "not_found")
         echo "Latest version on npm: $NPM_VERSION"
-        echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
         
-        # Check if the package doesn't exist or has a different version
         if [ "$NPM_VERSION" = "not_found" ]; then
           echo "Package not found in registry. Will publish new package."
-          echo "should_publish=true" >> $GITHUB_OUTPUT
         elif [ "$NPM_VERSION" != "$PACKAGE_VERSION" ]; then
-          echo "Local version differs from npm version. Will publish update."
-          echo "should_publish=true" >> $GITHUB_OUTPUT
+          echo "Local version ($PACKAGE_VERSION) differs from npm version ($NPM_VERSION). Will publish update."
         else
-          echo "Package version $PACKAGE_VERSION already exists on npm. Skipping publish."
-          echo "should_publish=false" >> $GITHUB_OUTPUT
+          echo "Package version $PACKAGE_VERSION already exists on npm."
         fi
 
-    # Step 6: Publish to npm only if version has changed
-    - name: Publish package
-      if: steps.check_version.outputs.should_publish == 'true'
-      run: npm publish --access public
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        
-    - name: Package already exists
-      if: steps.check_version.outputs.should_publish == 'false'
-      run: echo "Package version ${{ steps.check_version.outputs.package_version }} already exists on npm. No publish needed."
+    # Step 6: Use dedicated npm publish action
+    - name: Publish to NPM
+      uses: JS-DevTools/npm-publish@v2
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        access: public
