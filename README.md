@@ -314,6 +314,15 @@ The tool accepts these parameters:
 | priority | Message priority: min, low, default, high, max | No |
 | tags | Array of notification tags (supports emoji shortcodes) | No |
 
+```
+#ntfy_me({
+  taskTitle: "Task Complete", 
+  taskSummary: "Your requested operation has been completed successfully.",
+  priority: "default",
+  tags: ["check", "rocket"]
+})
+```
+
 ### Emoji Shortcodes
 
 You can use emoji shortcodes in your tags for visual indicators:
