@@ -1,4 +1,4 @@
-# ntfy-me-mcp
+# 📤 ntfy-me-mcp
 [![NPM Version](https://img.shields.io/npm/v/ntfy-me-mcp.svg)](https://www.npmjs.com/package/ntfy-me-mcp)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
