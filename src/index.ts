@@ -5,6 +5,16 @@ import { z } from "zod";
 import fetch from "node-fetch";
 import * as dotenv from "dotenv";
 import prompts from "prompts";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import fs from "fs";
+import { detectMarkdown } from "./helpers/markdown.js";
+
+// Get package.json path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packagePath = join(__dirname, '..', 'package.json');
+const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
 
 dotenv.config();
 
@@ -55,7 +65,7 @@ async function initializeServer() {
   // Create the MCP server
   const server = new McpServer({
     name: "ntfy-me-mcp",
-    version: "1.0.0",
+    version: packageJson.version,
   });
 
   // Add the notify_user tool
@@ -70,8 +80,9 @@ async function initializeServer() {
       accessToken: z.string().optional().describe("Optional access token for authentication (defaults to NTFY_TOKEN env var)"),
       priority: z.enum(["min", "low", "default", "high", "max"]).optional().describe("Message priority level"),
       tags: z.array(z.string()).optional().describe("Tags for the notification"),
+      markdown: z.boolean().optional().describe("Whether to format the message with Markdown support"),
     },
-    async ({ taskTitle, taskSummary, ntfyUrl, ntfyTopic, accessToken, priority, tags }) => {
+    async ({ taskTitle, taskSummary, ntfyUrl, ntfyTopic, accessToken, priority, tags, markdown }) => {
       try {
         const url = ntfyUrl || NTFY_URL;
         const topic = ntfyTopic || NTFY_TOPIC;
@@ -96,6 +107,14 @@ async function initializeServer() {
           headers.Priority = priority;
         }
         
+        // Auto-detect markdown if not explicitly specified
+        const shouldUseMarkdown = markdown !== undefined ? markdown : detectMarkdown(taskSummary);
+        
+        // Add Markdown formatting if specified or detected
+        if (shouldUseMarkdown) {
+          headers["X-Markdown"] = "true";
+        }
+        
         // Add tags if specified
         // Tags can include emoji shortcodes from https://docs.ntfy.sh/emojis/
         // Examples: "warning" becomes ⚠️, "check" becomes ✅, "red_circle" becomes 🔴, etc.
@@ -106,7 +125,7 @@ async function initializeServer() {
         // Remove any newlines from endpoint string (fixing parsing issue)
         const cleanEndpoint = endpoint.trim();
         
-        console.log(`Sending notification to ${cleanEndpoint}`);
+        console.log(`Sending notification to ${cleanEndpoint}${shouldUseMarkdown ? " with Markdown formatting" : ""}`);
         
         const response = await fetch(cleanEndpoint, {
           method: "POST",

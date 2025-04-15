@@ -35,6 +35,7 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
   - [Using with AI Assistants](#using-with-ai-assistants)
   - [Notification Parameters](#notification-parameters)
   - [Emoji Shortcodes](#emoji-shortcodes)
+  - [Markdown Formatting](#markdown-formatting)
 - [Example Notification](#example-notification)
 - [Development](#development)
   - [Building from Source](#building-from-source)
@@ -49,12 +50,12 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 - 🔒 **Secure**: Optional authentication with access tokens
 - 🔑 **Input Masking**: Securely store your ntfy token in your vs config!
 - 🌐 **Self-hosted Support**: Works with both ntfy.sh and self-hosted ntfy instances
+- 📄 **Markdown Support**: Format your notifications with markdown (auto-detected or explicitly set)
 
 ### (Coming soon...)
 - ⁄ **ntfy Actions**: Use ntfy actions to trigger tasks or commands on your device 
 - 📨 **Email**:  Send notifications to email (requires ntfy email server configuration)
 - 🔗 **Click urls**: Ability to customize click urls
-- 📄 **Markdown**: Support for markdown formatting
 - and more!
 
 ## Quickstart - MCP Server Configuration
@@ -319,6 +320,7 @@ The tool accepts these parameters:
 | taskSummary | The notification body | Yes |
 | priority | Message priority: min, low, default, high, max | No |
 | tags | Array of notification tags (supports emoji shortcodes) | No |
+| markdown | Boolean to enable markdown formatting (true/false) | No |
 
 ```
 #ntfy_me({
@@ -328,6 +330,8 @@ The tool accepts these parameters:
   tags: ["check", "rocket"]
 })
 ```
+
+> **Note**: Markdown formatting is automatically detected in your taskSummary content. You can explicitly set `markdown: true` or `markdown: false` to override the automatic detection.
 
 ### Emoji Shortcodes
 
@@ -339,6 +343,49 @@ You can use emoji shortcodes in your tags for visual indicators:
 - `tada` → 🎉
 
 See the [full list of supported emoji shortcodes](https://docs.ntfy.sh/emojis/).
+
+### Markdown Formatting
+
+Your notifications now support rich markdown formatting! When you include markdown syntax in your `taskSummary`, the formatting is automatically detected and applied. You can:
+
+- Format text with **bold**, *italic*, or ~~strikethrough~~
+- Create organized lists (ordered or unordered)
+- Add code blocks with syntax highlighting
+- Include links and images
+- Create tables and quotes
+
+**Example markdown notification:**
+
+```javascript
+{
+  taskTitle: "Data Analysis Complete",
+  taskSummary: `
+## Analysis Results
+
+The data processing task has completed with the following results:
+
+- **Processed records**: 1,432
+- **Success rate**: 99.7%
+- **Processing time**: 3.2s
+
+\`\`\`json
+{
+  "status": "complete",
+  "errors": 4,
+  "warnings": 12
+}
+\`\`\`
+
+> Note: Full logs are available in the output directory.
+
+[View detailed report](https://example.com/report)
+  `,
+  priority: "high",
+  tags: ["check", "chart"]
+}
+```
+
+> **Note**: Markdown is automatically detected, but you can also explicitly set `markdown: true` or `markdown: false` to override the detection.
 
 ## Example Notification
 

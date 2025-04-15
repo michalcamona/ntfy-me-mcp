@@ -1,7 +1,31 @@
 {
   "name": "ntfy-me-mcp",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "An MCP server for sending ntfy notifications to your self-hosted ntfy server 📤",
+  "keywords": [
+    "ntfy",
+    "mcp",
+    "mcp-server",
+    "notifications",
+    "modelcontextprotocol",
+    "self-hosted",
+    "server",
+    "LLM",
+    "ntfy-me",
+    "ntfy-me-mcp",
+    "ntfy-mcp",
+    "ntfy-server",
+    "ntfy-notifications",
+    "ntfy-mcp-server",
+    "model-context-protocol",
+    "push-notifications",
+    "typescript",
+    "AI-integration",
+    "copilot",
+    "visual-studio-code",
+    "vscode",
+    "claude"
+  ],
   "type": "module",
   "main": "build/index.js",
   "bin": {
@@ -18,7 +42,9 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.7.0",
+    "@types/markdown-it": "^14.1.2",
     "dotenv": "^16.4.7",
+    "markdown-it": "^14.1.0",
     "node-fetch": "^3.3.2",
     "prompts": "^2.4.2",
     "zod": "^3.22.4"
