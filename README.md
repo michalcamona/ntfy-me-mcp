@@ -2,12 +2,12 @@
 [![NPM Version](https://img.shields.io/npm/v/ntfy-me-mcp.svg)](https://www.npmjs.com/package/ntfy-me-mcp)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 
-> A streamlined Model Context Protocol (MCP) server for sending notifications via ntfy service 📲
+> A streamlined Model Context Protocol (MCP) server for sending notifications via ntfy service (public or selfhosted with token support) 📲
 
 
 ## Overview
 
-ntfy-me-mcp provides AI assistants with the ability to send real-time notifications to your devices through the [ntfy](https://ntfy.sh) service. Get notified when your AI completes tasks, encounters errors, or reaches important milestones - all without constant monitoring.
+ntfy-me-mcp provides AI assistants with the ability to send real-time notifications to your devices through the [ntfy](https://ntfy.sh) service (either public or selfhosted with token support). Get notified when your AI completes tasks, encounters errors, or reaches important milestones - all without constant monitoring.
 
 ## Table of Contents
 
