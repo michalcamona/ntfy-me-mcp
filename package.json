@@ -29,7 +29,7 @@
   "type": "module",
   "main": "build/index.js",
   "bin": {
-    "ntfy-me-mcp": "./build/index.js"
+    "ntfy-me-mcp": "build/index.js"
   },
   "files": [
     "build/**/*",
@@ -59,6 +59,6 @@
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gitmotion/ntfy-me-mcp.git"
+    "url": "git+https://github.com/gitmotion/ntfy-me-mcp.git"
   }
 }
