@@ -4,6 +4,9 @@
 
 > A streamlined Model Context Protocol (MCP) server for sending notifications via ntfy service (public or selfhosted with token support) 📲
 
+<a href="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp/badge" alt="ntfy-me-mcp MCP server" />
+</a>
 
 ## Overview
 
