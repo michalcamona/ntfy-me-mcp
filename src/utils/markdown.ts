@@ -80,19 +80,20 @@ export function hasCommonMarkdownPatterns(text: string): boolean {
 
 /**
  * Combined approach to detect markdown in text
- * First tries using the markdown-it parser, then falls back to pattern matching
+ * First tries using the faster regex pattern matching, then falls back to the more thorough parser-based approach
  * 
  * @param text The text to check for markdown
  * @returns true if markdown is detected by either method, false otherwise
  */
 export function detectMarkdown(text: string): boolean {
-  // First try the parser-based approach
-  const hasMarkdownStructure = containsMarkdown(text);
+  // First try the faster regex-based approach
+  const hasCommonPatterns = hasCommonMarkdownPatterns(text);
   
-  // If that fails, check for common patterns
-  if (!hasMarkdownStructure) {
-    return hasCommonMarkdownPatterns(text);
+  // If that finds markdown, return immediately
+  if (hasCommonPatterns) {
+    return true;
   }
   
-  return hasMarkdownStructure;
+  // Fall back to the more thorough but slower parser-based approach
+  return containsMarkdown(text);
 }

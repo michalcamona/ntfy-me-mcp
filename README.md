@@ -16,6 +16,14 @@
 
 ntfy-me-mcp provides AI assistants with the ability to send real-time notifications to your devices through the [ntfy](https://ntfy.sh) service (either public or selfhosted with token support). Get notified when your AI completes tasks, encounters errors, or reaches important milestones - all without constant monitoring.
 
+The server includes intelligent features like automatic URL detection for creating view actions and smart markdown formatting detection, making it easier for AI assistants to create rich, interactive notifications without extra configuration.
+
+<details>
+<summary>Intelligent Auto Detect Preview:</summary>
+
+<img src="https://github.com/user-attachments/assets/5a79f377-8a5e-4c56-a6f6-1aff5d70ee0c" alt="autodetect-preview" width=50%>
+</details>
+
 ## Table of Contents
 
 - [Features](#features)
@@ -41,6 +49,7 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
   - [Setting Up the Notification Receiver](#setting-up-the-notification-receiver)
   - [Using with AI Assistants](#using-with-ai-assistants)
   - [Notification Parameters](#notification-parameters)
+  - [Action Links](#action-links)
   - [Emoji Shortcodes](#emoji-shortcodes)
   - [Markdown Formatting](#markdown-formatting)
 - [Example Notification](#example-notification)
@@ -54,16 +63,17 @@ ntfy-me-mcp provides AI assistants with the ability to send real-time notificati
 - 🚀 **Quick Setup**: Run with npx or docker!
 - 🔔 **Real-time Notifications**: Get updates on your phone/desktop when tasks complete
 - 🎨 **Rich Notifications**: Support for topic, title, priorities, emoji tags, and detailed messages
+- 🎯 **Smart Action Links**: Automatically detects URLs in messages and creates view actions
+- 📄 **Intelligent Markdown**: Auto-detects and enables markdown formatting when present
 - 🔒 **Secure**: Optional authentication with access tokens
 - 🔑 **Input Masking**: Securely store your ntfy token in your vs config!
 - 🌐 **Self-hosted Support**: Works with both ntfy.sh and self-hosted ntfy instances
-- 📄 **Markdown Support**: Format your notifications with markdown (auto-detected or explicitly set)
 
 ### (Coming soon...)
-- ⁄ **ntfy Actions**: Use ntfy actions to trigger tasks or commands on your device 
 - 📨 **Email**:  Send notifications to email (requires ntfy email server configuration)
 - 🔗 **Click urls**: Ability to customize click urls
-- and more!
+- 🖼️ **Image urls**: Intelligent image url detection to automatically include image urls in messages and notifications
+- 🏁 and more!
 
 ## Quickstart - MCP Server Configuration
 
@@ -328,17 +338,58 @@ The tool accepts these parameters:
 | priority | Message priority: min, low, default, high, max | No |
 | tags | Array of notification tags (supports emoji shortcodes) | No |
 | markdown | Boolean to enable markdown formatting (true/false) | No |
+| actions | Array of view action objects for clickable links | No |
 
-```
-#ntfy_me({
-  taskTitle: "Task Complete", 
-  taskSummary: "Your requested operation has been completed successfully.",
-  priority: "default",
-  tags: ["check", "rocket"]
-})
+### Action Links
+
+You can add clickable action buttons to your notifications using the `actions` parameter, or let the server automatically detect URLs in your message. 
+
+#### Automatic URL Detection
+When URLs are present in your message body, the server automatically creates up to 3 view actions (ntfy's maximum limit) from the first detected URLs. This makes it easy to include clickable links without manually specifying the actions array.
+
+For example, this message:
+```javascript
+{
+  taskTitle: "Build Complete",
+  taskSummary: "Your PR has been merged! View the changes at https://github.com/org/repo/pull/123 or check the deployment at https://staging.app.com"
+}
 ```
 
-> **Note**: Markdown formatting is automatically detected in your taskSummary content. You can explicitly set `markdown: true` or `markdown: false` to override the automatic detection.
+Will automatically generate view actions for both URLs, making them easily clickable in the notification.
+
+#### Manual Action Configuration
+For more control, you can manually specify actions:
+
+| Property | Description | Required |
+|----------|-------------|----------|
+| action | Must be "view" | Yes |
+| label | Button text to display | Yes |
+| url | URL to open when clicked | Yes |
+| clear | Whether to clear notification on click (optional) | No |
+
+Example with action links:
+
+```javascript
+{
+  taskTitle: "Pull Request Review",
+  taskSummary: "Your code has been reviewed and is ready for final checks",
+  priority: "high",
+  tags: ["check", "code"],
+  actions: [
+    {
+      action: "view",
+      label: "View PR",
+      url: "https://github.com/org/repo/pull/123"
+    },
+    {
+      action: "view",
+      label: "View Changes",
+      url: "https://github.com/org/repo/pull/123/files",
+      clear: true
+    }
+  ]
+}
+```
 
 ### Emoji Shortcodes
 
@@ -353,48 +404,29 @@ See the [full list of supported emoji shortcodes](https://docs.ntfy.sh/emojis/).
 
 ### Markdown Formatting
 
-Your notifications now support rich markdown formatting! When you include markdown syntax in your `taskSummary`, the formatting is automatically detected and applied. You can:
+Your notifications support rich markdown formatting with intelligent detection! When you include markdown syntax in your `taskSummary`, the server automatically detects it and enables markdown parsing - no need to set `markdown: true` explicitly.
 
-- Format text with **bold**, *italic*, or ~~strikethrough~~
-- Create organized lists (ordered or unordered)
-- Add code blocks with syntax highlighting
-- Include links and images
-- Create tables and quotes
+#### Automatic Detection
+The server checks for common markdown patterns like:
+- Headers (#, ##, etc.)
+- Lists (-, *, numbers)
+- Code blocks (```)
+- Links ([text](url))
+- Bold/italic (*text*, **text**)
 
-**Example markdown notification:**
+When these patterns are detected, markdown parsing is automatically enabled for the message.
 
+#### Manual Override
+While automatic detection works in most cases, you can still explicitly control markdown parsing:
 ```javascript
 {
-  taskTitle: "Data Analysis Complete",
-  taskSummary: `
-## Analysis Results
-
-The data processing task has completed with the following results:
-
-- **Processed records**: 1,432
-- **Success rate**: 99.7%
-- **Processing time**: 3.2s
-
-\`\`\`json
-{
-  "status": "complete",
-  "errors": 4,
-  "warnings": 12
-}
-\`\`\`
-
-> Note: Full logs are available in the output directory.
-
-[View detailed report](https://example.com/report)
-  `,
-  priority: "high",
-  tags: ["check", "chart"]
+  taskTitle: "Task Complete",
+  taskSummary: "Regular plain text message",
+  markdown: false  // Force disable markdown parsing
 }
 ```
 
-> **Note**: Markdown is automatically detected, but you can also explicitly set `markdown: true` or `markdown: false` to override the detection.
-
-## Example Notification
+### Example Notification
 
 ```javascript
 {

@@ -8,7 +8,8 @@ import prompts from "prompts";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import fs from "fs";
-import { detectMarkdown } from "./helpers/markdown.js";
+import { detectMarkdown } from "./utils/markdown.js";
+import { processActions } from "./utils/actions.js";
 
 // Get package.json path
 const __filename = fileURLToPath(import.meta.url);
@@ -81,8 +82,14 @@ async function initializeServer() {
       priority: z.enum(["min", "low", "default", "high", "max"]).optional().describe("Message priority level"),
       tags: z.array(z.string()).optional().describe("Tags for the notification"),
       markdown: z.boolean().optional().describe("Whether to format the message with Markdown support"),
+      actions: z.array(z.object({
+        action: z.literal("view"),
+        label: z.string(),
+        url: z.string(),
+        clear: z.boolean().optional()
+      })).optional().describe("Optional array of view actions to add to the notification"),
     },
-    async ({ taskTitle, taskSummary, ntfyUrl, ntfyTopic, accessToken, priority, tags, markdown }) => {
+    async ({ taskTitle, taskSummary, ntfyUrl, ntfyTopic, accessToken, priority, tags, markdown, actions }) => {
       try {
         const url = ntfyUrl || NTFY_URL;
         const topic = ntfyTopic || NTFY_TOPIC;
@@ -94,7 +101,7 @@ async function initializeServer() {
 
         // Prepare headers
         const headers: Record<string, string> = { 
-          Title: taskTitle
+          'Title': taskTitle
         };
         
         // Add access token if provided
@@ -106,6 +113,9 @@ async function initializeServer() {
         if (priority) {
           headers.Priority = priority;
         }
+
+        // Process URLs in the message and get actions if none provided
+        const viewActions = actions || processActions(taskSummary);
         
         // Auto-detect markdown if not explicitly specified
         const shouldUseMarkdown = markdown !== undefined ? markdown : detectMarkdown(taskSummary);
@@ -116,16 +126,23 @@ async function initializeServer() {
         }
         
         // Add tags if specified
-        // Tags can include emoji shortcodes from https://docs.ntfy.sh/emojis/
-        // Examples: "warning" becomes ⚠️, "check" becomes ✅, "red_circle" becomes 🔴, etc.
         if (tags && tags.length > 0) {
           headers.Tags = tags.join(",");
         }
+
+        // Add actions to X-Actions header if we have any
+        if (viewActions.length > 0) {
+          headers["X-Actions"] = JSON.stringify(viewActions);
+        }
         
-        // Remove any newlines from endpoint string (fixing parsing issue)
+        // Remove any newlines from endpoint string
         const cleanEndpoint = endpoint.trim();
         
-        console.log(`Sending notification to ${cleanEndpoint}${shouldUseMarkdown ? " with Markdown formatting" : ""}`);
+        console.log(
+          `Sending notification to ${cleanEndpoint}` +
+          `${shouldUseMarkdown ? " with Markdown formatting" : ""}` +
+          `${viewActions.length > 0 ? ` and ${viewActions.length} view action(s)` : ""}`
+        );
         
         const response = await fetch(cleanEndpoint, {
           method: "POST",
