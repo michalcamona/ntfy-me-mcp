@@ -1,4 +1,5 @@
 # 📤 ntfy-me-mcp
+[![smithery badge](https://smithery.ai/badge/@gitmotion/ntfy-me-mcp)](https://smithery.ai/server/@gitmotion/ntfy-me-mcp)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![Model Context Protocol](https://img.shields.io/badge/MCP-1.8.0-green.svg?logo=anthropic)](https://modelcontextprotocol.io/)
 [![NPM Version](https://img.shields.io/npm/v/ntfy-me-mcp.svg?logo=npm&color=orange)](https://www.npmjs.com/package/ntfy-me-mcp)
@@ -191,6 +192,14 @@ In your MCP configuration (e.g., VS Code settings.json):
 ```
 
 ## Installation
+
+### Installing via Smithery
+
+To install ntfy-me-mcp for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@gitmotion/ntfy-me-mcp):
+
+```bash
+npx -y @smithery/cli install @gitmotion/ntfy-me-mcp --client claude
+```
 
 If you need to install and run the server directly (alternative to the MCP configuration above):
 
