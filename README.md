@@ -1,18 +1,22 @@
 # 📤 ntfy-me-mcp
-[![smithery badge](https://smithery.ai/badge/@gitmotion/ntfy-me-mcp)](https://smithery.ai/server/@gitmotion/ntfy-me-mcp)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![Model Context Protocol](https://img.shields.io/badge/MCP-1.8.0-green.svg?logo=anthropic)](https://modelcontextprotocol.io/)
 [![NPM Version](https://img.shields.io/npm/v/ntfy-me-mcp.svg?logo=npm&color=orange)](https://www.npmjs.com/package/ntfy-me-mcp)
 [![Docker Image Version](https://img.shields.io/docker/v/gitmotion/ntfy-me-mcp?logo=docker&label=Docker)](https://hub.docker.com/r/gitmotion/ntfy-me-mcp)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 [![GitHub](https://img.shields.io/github/stars/gitmotion/ntfy-me-mcp?style=social)](https://github.com/gitmotion/ntfy-me-mcp)
+<a href="https://www.buymeacoffee.com/gitmotion" target="_blank" rel="noopener noreferrer">
+  <img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy me a coffee" width="105px" />
+</a>
 
 > A streamlined Model Context Protocol (MCP) server for sending notifications via ntfy service (public or selfhosted with token support) 📲
 
-<a href="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp/badge" alt="ntfy-me-mcp MCP server" />
-</a>
+### Available via:
 
+| Name | Link / Badge |
+|------|------|
+| Glama.ai | <a href="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp"><img width="250" src="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp/badge" alt="ntfy-me-mcp MCP server" /></a> |
+| Smithery.ai | [![smithery badge](https://smithery.ai/badge/@gitmotion/ntfy-me-mcp)](https://smithery.ai/server/@gitmotion/ntfy-me-mcp) |
 ## Overview
 
 ntfy-me-mcp provides AI assistants with the ability to send real-time notifications to your devices through the [ntfy](https://ntfy.sh) service (either public or selfhosted with token support). Get notified when your AI completes tasks, encounters errors, or reaches important milestones - all without constant monitoring.
@@ -43,6 +47,7 @@ The server includes intelligent features like automatic URL detection for creati
   - [Option 3: Install Locally](#option-3-install-locally)
   - [Option 4: Build and Use Locally](#option-4-build-and-use-locally-with-node-command)
     - [Using locally built server with MCP](#using-locally-built-server-with-mcp)
+  - [Option 5: MCP Marketplace Installations](#option-5-mcp-marketplace-installations)
 - [Configuration](#configuration)
   - [Environment Variables](#environment-variables)
 - [Usage](#usage)
@@ -193,14 +198,6 @@ In your MCP configuration (e.g., VS Code settings.json):
 
 ## Installation
 
-### Installing via Smithery
-
-To install ntfy-me-mcp for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@gitmotion/ntfy-me-mcp):
-
-```bash
-npx -y @smithery/cli install @gitmotion/ntfy-me-mcp --client claude
-```
-
 If you need to install and run the server directly (alternative to the MCP configuration above):
 
 ### Option 1: Install globally
@@ -280,6 +277,15 @@ When configuring your MCP to use a locally built version, specify the node comma
 ```
 
 Remember to use the absolute path to your build/index.js file in the args array.
+
+### Option 5: MCP Marketplace installations
+#### Installing via Smithery
+
+To install ntfy-me-mcp for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@gitmotion/ntfy-me-mcp):
+
+```bash
+npx -y @smithery/cli install @gitmotion/ntfy-me-mcp --client claude
+```
 
 ## Configuration
 
