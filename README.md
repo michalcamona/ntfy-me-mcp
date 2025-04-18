@@ -11,23 +11,20 @@
 
 > A streamlined Model Context Protocol (MCP) server for sending notifications via ntfy service (public or selfhosted with token support) 📲
 
-### Available via:
-
-| Name | Link / Badge |
-|------|------|
-| Glama.ai | <a href="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp"><img width="250" src="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp/badge" alt="ntfy-me-mcp MCP server" /></a> |
-| Smithery.ai | [![smithery badge](https://smithery.ai/badge/@gitmotion/ntfy-me-mcp)](https://smithery.ai/server/@gitmotion/ntfy-me-mcp) |
 ## Overview
 
 ntfy-me-mcp provides AI assistants with the ability to send real-time notifications to your devices through the [ntfy](https://ntfy.sh) service (either public or selfhosted with token support). Get notified when your AI completes tasks, encounters errors, or reaches important milestones - all without constant monitoring.
 
 The server includes intelligent features like automatic URL detection for creating view actions and smart markdown formatting detection, making it easier for AI assistants to create rich, interactive notifications without extra configuration.
 
-<details>
-<summary>Intelligent Auto Detect Preview:</summary>
-
 <img src="https://github.com/user-attachments/assets/5a79f377-8a5e-4c56-a6f6-1aff5d70ee0c" alt="autodetect-preview" width=50%>
-</details>
+
+### Available via:
+
+| Name | Link / Badge |
+|------|------|
+| Glama.ai | <a href="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp"><img width="250" src="https://glama.ai/mcp/servers/@gitmotion/ntfy-me-mcp/badge" alt="ntfy-me-mcp MCP server" /></a> |
+| Smithery.ai | [![smithery badge](https://smithery.ai/badge/@gitmotion/ntfy-me-mcp)](https://smithery.ai/server/@gitmotion/ntfy-me-mcp) |
 
 ## Table of Contents
 
@@ -51,16 +48,20 @@ The server includes intelligent features like automatic URL detection for creati
 - [Configuration](#configuration)
   - [Environment Variables](#environment-variables)
 - [Usage](#usage)
-  - [Authentication](#authentication)
-  - [Setting Up the Notification Receiver](#setting-up-the-notification-receiver)
-  - [Using with AI Assistants](#using-with-ai-assistants)
-  - [Notification Parameters](#notification-parameters)
-  - [Action Links](#action-links)
-  - [Emoji Shortcodes](#emoji-shortcodes)
-  - [Markdown Formatting](#markdown-formatting)
-- [Example Notification](#example-notification)
-- [Development](#development)
-  - [Building from Source](#building-from-source)
+    - [Authentication](#authentication)
+    - [Setting Up the Notification Receiver](#setting-up-the-notification-receiver)
+    - [Sending Notifications (ntfy_me tool)](#sending-notifications-ntfy_me-tool)
+      - [Using Natural Language](#using-natural-language)
+      - [Message Parameters](#message-parameters)
+      - [Action Links](#action-links)
+      - [Emoji Shortcodes](#emoji-shortcodes)
+      - [Markdown Formatting](#markdown-formatting)
+    - [Retrieving Messages (ntfy_me_fetch tool)](#retrieving-messages-ntfy_me_fetch-tool)
+      - [Using Natural Language](#using-natural-language-1)
+      - [Message Parameters](#message-parameters-1)
+      - [Examples](#examples)
+  - [Development](#development)
+    - [Building from Source](#building-from-source)
 - [License](#license)
 - [Contributing](#contributing)
 
@@ -69,6 +70,7 @@ The server includes intelligent features like automatic URL detection for creati
 - 🚀 **Quick Setup**: Run with npx or docker!
 - 🔔 **Real-time Notifications**: Get updates on your phone/desktop when tasks complete
 - 🎨 **Rich Notifications**: Support for topic, title, priorities, emoji tags, and detailed messages
+- 🔍 **Notification Fetching**: Fetch and filter cached messages from your ntfy topics
 - 🎯 **Smart Action Links**: Automatically detects URLs in messages and creates view actions
 - 📄 **Intelligent Markdown**: Auto-detects and enables markdown formatting when present
 - 🔒 **Secure**: Optional authentication with access tokens
@@ -76,7 +78,7 @@ The server includes intelligent features like automatic URL detection for creati
 - 🌐 **Self-hosted Support**: Works with both ntfy.sh and self-hosted ntfy instances
 
 ### (Coming soon...)
-- 📨 **Email**:  Send notifications to email (requires ntfy email server configuration)
+- 📨 **Email**: Send notifications to email (requires ntfy email server configuration)
 - 🔗 **Click urls**: Ability to customize click urls
 - 🖼️ **Image urls**: Intelligent image url detection to automatically include image urls in messages and notifications
 - 🏁 and more!
@@ -332,17 +334,22 @@ If authentication is required but not provided, you'll receive a clear error mes
 1. Install the [ntfy app](https://ntfy.sh/app) on your device
 2. Subscribe to your chosen topic (the same as your `NTFY_TOPIC` setting)
 
-### Using with AI Assistants
+### Sending Notifications (ntfy_me tool)
 
-When working with your AI assistant, include phrases like:
+This section covers all functionality related to sending notifications using the ntfy_me tool.
 
+#### Using Natural Language
+
+When working with your AI assistant, you can use natural phrases like:
 ```
-Write me a React component, and notify me when it's done.
+"Send me a notification when the build is complete"
+"Notify me when the task is done"
+"Alert me after generating the code"
+"Message me when the process finishes"
+"Send an alert with high priority"
 ```
 
-Your AI will use the `ntfy_me` tool to send a notification upon task completion.
-
-### Notification Parameters
+#### Message Parameters
 
 The tool accepts these parameters:
 
@@ -355,11 +362,23 @@ The tool accepts these parameters:
 | markdown | Boolean to enable markdown formatting (true/false) | No |
 | actions | Array of view action objects for clickable links | No |
 
-### Action Links
+Example:
+```javascript
+{
+  taskTitle: "Code Generation Complete",
+  taskSummary: "Your React component has been created successfully with proper TypeScript typing.",
+  priority: "high",
+  tags: ["check", "code", "react"]
+}
+```
+
+This will send a high-priority notification with a checkmark emoji.
+
+#### Action Links
 
 You can add clickable action buttons to your notifications using the `actions` parameter, or let the server automatically detect URLs in your message. 
 
-#### Automatic URL Detection
+##### Automatic URL Detection
 When URLs are present in your message body, the server automatically creates up to 3 view actions (ntfy's maximum limit) from the first detected URLs. This makes it easy to include clickable links without manually specifying the actions array.
 
 For example, this message:
@@ -372,7 +391,7 @@ For example, this message:
 
 Will automatically generate view actions for both URLs, making them easily clickable in the notification.
 
-#### Manual Action Configuration
+##### Manual Action Configuration
 For more control, you can manually specify actions:
 
 | Property | Description | Required |
@@ -406,7 +425,7 @@ Example with action links:
 }
 ```
 
-### Emoji Shortcodes
+#### Emoji Shortcodes
 
 You can use emoji shortcodes in your tags for visual indicators:
 
@@ -417,11 +436,11 @@ You can use emoji shortcodes in your tags for visual indicators:
 
 See the [full list of supported emoji shortcodes](https://docs.ntfy.sh/emojis/).
 
-### Markdown Formatting
+#### Markdown Formatting
 
 Your notifications support rich markdown formatting with intelligent detection! When you include markdown syntax in your `taskSummary`, the server automatically detects it and enables markdown parsing - no need to set `markdown: true` explicitly.
 
-#### Automatic Detection
+##### Automatic Detection
 The server checks for common markdown patterns like:
 - Headers (#, ##, etc.)
 - Lists (-, *, numbers)
@@ -431,7 +450,7 @@ The server checks for common markdown patterns like:
 
 When these patterns are detected, markdown parsing is automatically enabled for the message.
 
-#### Manual Override
+##### Manual Override
 While automatic detection works in most cases, you can still explicitly control markdown parsing:
 ```javascript
 {
@@ -441,18 +460,78 @@ While automatic detection works in most cases, you can still explicitly control 
 }
 ```
 
-### Example Notification
+### Retrieving Messages (ntfy_me_fetch tool)
 
+This section covers all functionality related to fetching and filtering messages using the ntfy_me_fetch tool.
+
+#### Using Natural Language
+
+AI assistants understand various ways to request message fetching:
+```
+"Show me my recent notifications"
+"Get messages from the last hour"
+"Find notifications with title 'Build Complete'"
+"Search for messages with the test_tube tag"
+"Show notifications from the updates topic from the last 24hr"
+"Check my latest alerts"
+```
+
+#### Message Parameters
+
+The tool accepts these parameters:
+
+| Parameter | Description | Required |
+|-----------|-------------|----------|
+| ntfyTopic | Topic to fetch messages from (defaults to NTFY_TOPIC env var) | No |
+| since | How far back to retrieve messages ('10m', '1h', '1d', timestamp, message ID, or 'all') | No |
+| messageId | Find a specific message by its ID | No |
+| messageText | Find messages containing exact text content | No |
+| messageTitle | Find messages with exact title/subject | No |
+| priorities | Find messages with specific priority levels | No |
+| tags | Find messages with specific tags | No |
+
+#### Examples
+
+1. **Fetch Recent Messages**
 ```javascript
 {
-  taskTitle: "Code Generation Complete",
-  taskSummary: "Your React component has been created successfully with proper TypeScript typing.",
-  priority: "high",
-  tags: ["check", "code", "react"]
+  since: "30m"  // Get messages from last 30 minutes
 }
 ```
 
-This will send a high-priority notification with a checkmark emoji.
+2. **Filter by Title and Priority**
+```javascript
+{
+  messageTitle: "Build Complete",
+  priorities: "high",
+  since: "1d"
+}
+```
+
+3. **Search Different Topic with Tags**
+```javascript
+{
+  ntfyTopic: "updates",
+  tags: ["error", "warning"],
+  since: "all"
+}
+```
+
+4. **Find Specific Message**
+```javascript
+{
+  messageId: "xxxxXXXXxxxx"
+}
+```
+
+Messages are returned with full details including:
+- Message ID and timestamp
+- Topic and title
+- Content and priority
+- Tags and attachments
+- Action links and expiration
+
+> **Note**: Message history availability depends on your ntfy server's cache settings. The public ntfy.sh server typically caches messages for 12 hours.
 
 ## Development
 

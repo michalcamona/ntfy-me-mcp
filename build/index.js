@@ -10,6 +10,7 @@ import { dirname, join } from "path";
 import fs from "fs";
 import { detectMarkdown } from "./utils/markdown.js";
 import { processActions } from "./utils/actions.js";
+import { fetchMessages } from "./utils/messages.js";
 // Get package.json path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -62,7 +63,7 @@ async function initializeServer() {
         version: packageJson.version,
     });
     // Add the notify_user tool
-    server.tool("ntfy_me", "Notify the user that certain task is complete/error/stopped and give the summary and title of the completed task", {
+    server.tool("ntfy_me", "Send a notification to the user via ntfy. Use this tool when the user asks to 'send a notification', 'notify me', 'send me an alert', 'message me', 'ping me', or any similar request. This tool is perfect for sending status updates, alerts, reminders, or notifications about completed tasks.", {
         taskTitle: z.string().describe("Current task title/status"),
         taskSummary: z.string().describe("Current task summary"),
         ntfyUrl: z.string().optional().describe("Optional custom ntfy URL (defaults to NTFY_URL env var or https://ntfy.sh)"),
@@ -149,6 +150,76 @@ async function initializeServer() {
                     {
                         type: "text",
                         text: `Failed to send ntfy notification: ${error.message}`,
+                    },
+                ],
+                isError: true,
+            };
+        }
+    });
+    // Add the ntfy_me_fetch tool to fetch cached messages
+    server.tool("ntfy_me_fetch", "Fetch cached messages from an ntfy server topic. Use this tool when the user asks to 'show notifications', 'get my messages', 'show my alerts', 'find notifications', 'search notifications', or any similar request. Great for finding recent notifications, checking message history, or searching for specific notifications by content, title, tags, or priority.", {
+        ntfyUrl: z.string().optional().describe("Optional custom ntfy server URL (defaults to NTFY_URL env var or https://ntfy.sh)"),
+        ntfyTopic: z.string().optional().describe("Optional custom ntfy topic/channel to get messages from (defaults to NTFY_TOPIC env var)"),
+        accessToken: z.string().optional().describe("Optional access token for authentication (defaults to NTFY_TOKEN env var)"),
+        since: z.union([z.string(), z.number()]).optional().describe("How far back to retrieve messages: timespan (e.g., '10m', '1h', '1d'), timestamp, message ID, or 'all' for all messages. Default: 10 minutes"),
+        messageId: z.string().optional().describe("Find a specific message by its ID"),
+        messageText: z.string().optional().describe("Find messages containing this exact text content"),
+        messageTitle: z.string().optional().describe("Find messages with this exact title/subject"),
+        priorities: z.union([z.string(), z.array(z.string())]).optional().describe("Find messages with specific priority levels (min, low, default, high, max)"),
+        tags: z.union([z.string(), z.array(z.string())]).optional().describe("Find messages with specific tags (e.g., 'error', 'warning', 'success')"),
+    }, async ({ ntfyUrl, ntfyTopic, accessToken, since, messageId, messageText, messageTitle, priorities, tags }) => {
+        try {
+            const url = ntfyUrl || NTFY_URL;
+            const topic = ntfyTopic || NTFY_TOPIC;
+            const token = accessToken || NTFY_TOKEN;
+            // Default since to 10 minutes if not null
+            const sinceSetting = since === null ? undefined : (since || "10m");
+            // Fetch the messages with any provided filters
+            const messageRecords = await fetchMessages({
+                ntfyUrl: url,
+                topic,
+                token,
+                since: sinceSetting,
+                messageId,
+                messageText,
+                messageTitle,
+                priorities,
+                tags
+            });
+            if (!messageRecords) {
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text: `No messages found in topic ${topic}`,
+                        },
+                    ],
+                };
+            }
+            // Format the response
+            const messagesCount = Object.values(messageRecords).reduce((sum, messages) => sum + messages.length, 0);
+            const formattedMessages = Object.entries(messageRecords).map(([topic, messages]) => {
+                return {
+                    type: "text",
+                    text: `Topic: ${topic}\nMessages: ${messages.length}\n${JSON.stringify(messages, null, 2)}`
+                };
+            });
+            return {
+                content: [
+                    {
+                        type: "text",
+                        text: `Successfully fetched ${messagesCount} message(s) from ${Object.keys(messageRecords).length} topic(s)`,
+                    },
+                    ...formattedMessages
+                ],
+            };
+        }
+        catch (error) {
+            return {
+                content: [
+                    {
+                        type: "text",
+                        text: `Failed to fetch ntfy messages: ${error.message}`,
                     },
                 ],
                 isError: true,
