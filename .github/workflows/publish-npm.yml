@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main # Trigger on pushes to the main branch
-    tags:
-      - 'v*'
 
 jobs:
   build-and-publish:
@@ -29,8 +27,12 @@ jobs:
       # Step 4: Build the project
       - name: Build
         run: npm run build
+
+      # Step 5: Ensure correct npm registry
+      - name: Ensure correct npm registry
+        run: npm config set registry https://registry.npmjs.org/
       
-      # Step 5: Publish to npm
+      # Step 6: Publish to npm
       - name: Publish to npm
         run: npm publish --access public
         env:
